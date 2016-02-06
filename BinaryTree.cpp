@@ -36,6 +36,7 @@ class binaryTree{
 public:
     binaryTree();
     void insertNode(T data);
+    void deleteNode(T data);
     void updateSubtreeSize(node<T> * n);
     void inorderTraversal();
 
@@ -126,6 +127,61 @@ void binaryTree<T>::insertNode(T a) {
 }
 
 template <typename T>
+void binaryTree<T>::deleteNode(T data) {
+
+    //find out the node
+
+    node<T> * r = root;
+
+    while(r){
+
+        if(r->data == data){
+            break;
+        }
+
+        if(data < r->data){
+            r = r->left;
+        } else{
+            r = r->right;
+        }
+    }
+
+    if(!r){
+        cout<<"node to delete is not found!!"<<endl;
+        return;
+    }
+
+    //1. Happy case - the node to delete is a leaf
+    //r is the node which have data as value
+
+    if(r->left== nullptr && r->right == nullptr){
+
+        if(r->parent->left == r){
+            //r is left child of its parent
+            r->parent->left = nullptr;
+            delete(r);
+        }else{
+            //r is right child of its parent
+            r->parent->right == nullptr;
+            delete(r);
+        }
+
+        return;
+    }
+
+    //2. medium difficult case, the node to delete
+    // has one child
+
+    if(r->left == nullptr || r->right == nullptr){
+
+
+
+    }
+
+
+}
+
+template <typename T>
 void binaryTree<T>::inorderTraversal() {
     inorderTraversalHelper(root);
 }
@@ -152,9 +208,47 @@ int main(){
         tree.insertNode(node_value);
     }
 
-    cout<<"nodes inserted..."<<endl;
+    cout<<"printing nodes in inorder traversal..."<<endl;
 
     //just do an inorder traversal of the tree
     tree.inorderTraversal();
+
+    int option = 0;
+
+    do {
+        cout << "enter an option:" << endl;
+        cout << "1. insert node" << end;
+        cout << "2. delete node" << end;
+        cout << "3. inorder traversal " << end;
+        cout << "4. pre-order traversal " << end;
+        cout << "5. post-order traversal " << end;
+        cout << "6. order statistics(Eg. 24th smallest element?)" << endl;
+        cout << "7. rank of a node" << endl;
+        cout << "8. predecessor of a node" << endl;
+        cout << "9. successor of a node" << endl;
+        cout << "10. quit application" << endl;
+
+        cin>>option;
+
+        switch(option){
+            case 1:
+                cout<<"enter node value:";
+                int node_value;
+                cin>>node_value;
+                tree.insertNode(node_value);
+                break;
+            case 2:
+                cout<<"enter node value:"<<endl;
+                int node_to_delete;
+                cin>>node_to_delete;
+                tree.deleteNode(node_to_delete);
+                break;
+            default:
+                cout<<"invalid option"<<endl;
+
+
+        }
+
+    }while( option!=10)
 
 }
