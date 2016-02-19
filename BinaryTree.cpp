@@ -134,7 +134,6 @@ void binaryTree<T>::deleteNode(T data) {
     node<T> * r = root;
 
     while(r){
-
         if(r->data == data){
             break;
         }
@@ -159,24 +158,38 @@ void binaryTree<T>::deleteNode(T data) {
         if(r->parent->left == r){
             //r is left child of its parent
             r->parent->left = nullptr;
-            delete(r);
         }else{
             //r is right child of its parent
             r->parent->right == nullptr;
-            delete(r);
         }
+        delete(r);
 
         return;
     }
 
     //2. medium difficult case, the node to delete
-    // has one child
+    // has one child - in this case , just delete
+    // the node and re-wire the pointers
 
     if(r->left == nullptr || r->right == nullptr){
 
+        if(r->parent->left == r){//r is the left child of its parent
+            r->parent->left = r->left==nullptr?r->right:r->left;
+        }else{
+            r->parent->right = r->left==nullptr?r->right:r->left;
+        }
 
+        //rewire parent pointer
+        r->left==nullptr?r->right->parent = r->parent:r->left->parent = r->parent;
 
+        //finally delete r
+        delete(r);
     }
+
+    //case 3. most difficult case: the node is neither leaf nor has only one child
+    //ie , the node has two children
+    //Logic: swap this node and its inorder predecessor, now the node has become
+    //a leaf node. Delete the node - simple!
 
 
 }
