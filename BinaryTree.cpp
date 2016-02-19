@@ -47,6 +47,7 @@ private:
     void inorderTraversalHelper(node<T> *root);
     node<T> * predecessorHelper(node<T> * n);
     node<T> * successorHelper(node<T> * n);
+    node<T>* getNodePtr(T data);
 };
 
 template <typename T>
