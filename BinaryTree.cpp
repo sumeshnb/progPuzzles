@@ -39,10 +39,14 @@ public:
     void deleteNode(T data);
     void updateSubtreeSize(node<T> * n);
     void inorderTraversal();
+    T predecessor(T data);
+    T successor(T data);
 
 private:
     node<T> * root;
     void inorderTraversalHelper(node<T> *root);
+    node<T> * predecessorHelper(node<T> * n);
+    node<T> * successorHelper(node<T> * n);
 };
 
 template <typename T>
@@ -126,9 +130,53 @@ void binaryTree<T>::insertNode(T a) {
     }
 }
 
-template <typename T>
-void binaryTree<T>::deleteNode(T data) {
 
+template<typename T>
+T binaryTree<T>::predesessor(T data){
+
+     node<T>* p = predessorHelper(data);
+     if(p){
+         return p->data;
+     }else{
+         //return the same data to indicate 
+         //no predecessor present
+         return data;
+     }
+}
+
+template<typename T>
+T* binaryTree<T>::predecessorHelper(T data){
+    node<T> * r = getNodePtr(data);
+
+    //case-1: node has left subtree
+    if(r->left){
+        //return the node which has largest value in left subtree
+        node<T> *k = r->left;
+        while(k->right){
+            k = k->right;
+        }
+        return k;
+    }
+
+    //case-2: node does not have left subtree
+    // traverse up the tree untill a node 
+    // with higher value is found
+
+    node<T>* t = r;
+    while(t){
+        if(t->data < r->data){//assume no duplicate keys are present in the tree
+            //we found a parent with lower data
+            return t;
+        }
+        t = t->parent;
+    }
+
+    //only one node is present in the tree and which does not have predecessor
+    return nullptr;
+}
+
+template <typename T>
+void binaryTree<T>::getNodePtr(T data){
     //find out the node
 
     node<T> * r = root;
@@ -147,9 +195,22 @@ void binaryTree<T>::deleteNode(T data) {
 
     if(!r){
         cout<<"node to delete is not found!!"<<endl;
+        return nullptr;
+    }
+    return r;
+}
+
+
+template <typename T>
+void binaryTree<T>::deleteNode(T data) {
+
+    //find out the node
+
+    node<T> * r = nullptr;
+    if(r = getNodePtr(data)){
         return;
     }
-
+   
     //1. Happy case - the node to delete is a leaf
     //r is the node which have data as value
 
