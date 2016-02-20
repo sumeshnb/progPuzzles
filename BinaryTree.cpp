@@ -209,6 +209,7 @@ void binaryTree<T>::deleteNode(T data) {
 
     node<T> * r = nullptr;
     if(r = getNodePtr(data)){
+        //r is null pointer, data does not exist!!
         return;
     }
    
@@ -253,7 +254,17 @@ void binaryTree<T>::deleteNode(T data) {
     //Logic: swap this node and its inorder predecessor, now the node has become
     //a leaf node. Delete the node - simple!
 
+    node<T>* pred = predecessorHelper(data);
 
+    //exchange pred->data and data
+    T temp = pred->data;
+    pred->data = r->data;
+    r->data = temp;
+
+    //now delete pred , which should be a leaf
+
+    pred->parent->right = nullptr;//pred should be the right child of its parent
+    delete(pred);
 }
 
 template <typename T>
