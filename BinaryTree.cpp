@@ -45,7 +45,7 @@ public:
 private:
     node<T> * root;
     void inorderTraversalHelper(node<T> *root);
-    node<T> * predecessorHelper(node<T> * n);
+    node<T>* predecessorHelper(T data);
     node<T> * successorHelper(node<T> * n);
     node<T>* getNodePtr(T data);
 };
@@ -133,7 +133,7 @@ void binaryTree<T>::insertNode(T a) {
 
 
 template<typename T>
-T binaryTree<T>::predesessor(T data){
+T binaryTree<T>::predecessor(T data){
 
      node<T>* p = predessorHelper(data);
      if(p){
@@ -146,7 +146,7 @@ T binaryTree<T>::predesessor(T data){
 }
 
 template<typename T>
-T* binaryTree<T>::predecessorHelper(T data){
+node<T>* binaryTree<T>::predecessorHelper(T data){
     node<T> * r = getNodePtr(data);
 
     //case-1: node has left subtree
@@ -177,12 +177,13 @@ T* binaryTree<T>::predecessorHelper(T data){
 }
 
 template <typename T>
-void binaryTree<T>::getNodePtr(T data){
+node<T>* binaryTree<T>::getNodePtr(T data){
     //find out the node
 
     node<T> * r = root;
 
     while(r){
+        cout<<__FUNCTION__<<":r->data="<<r->data<<"  data="<<data<<endl;
         if(r->data == data){
             break;
         }
@@ -194,8 +195,8 @@ void binaryTree<T>::getNodePtr(T data){
         }
     }
 
-    if(!r){
-        cout<<"node to delete is not found!!"<<endl;
+    if(r == nullptr){
+        cout<<"node not found!!"<<endl;
         return nullptr;
     }
     return r;
@@ -207,9 +208,8 @@ void binaryTree<T>::deleteNode(T data) {
 
     //find out the node
 
-    node<T> * r = nullptr;
-    if(r = getNodePtr(data)){
-        //r is null pointer, data does not exist!!
+    node<T> * r = getNodePtr(data);
+    if(r == nullptr){
         return;
     }
    
@@ -217,6 +217,15 @@ void binaryTree<T>::deleteNode(T data) {
     //r is the node which have data as value
 
     if(r->left== nullptr && r->right == nullptr){
+
+        cout<<"\n DEBUG:leaf node case entered...\n";
+
+        //root is a special case!
+        if(r == root){
+            delete r;
+            root = nullptr;
+            return;
+        }
 
         if(r->parent->left == r){
             //r is left child of its parent
@@ -226,7 +235,6 @@ void binaryTree<T>::deleteNode(T data) {
             r->parent->right == nullptr;
         }
         delete(r);
-
         return;
     }
 
@@ -235,18 +243,28 @@ void binaryTree<T>::deleteNode(T data) {
     // the node and re-wire the pointers
 
     if(r->left == nullptr || r->right == nullptr){
+        cout<<"\n DEBUG:one child case entered...\n";
+        if(r != root){
+            if(r->parent->left == r){//r is the left child of its parent
+                r->parent->left = r->left==nullptr?r->right:r->left;
+            }else{
+                r->parent->right = r->left==nullptr?r->right:r->left;
+            }
 
-        if(r->parent->left == r){//r is the left child of its parent
-            r->parent->left = r->left==nullptr?r->right:r->left;
+            //rewire parent pointer
+            r->left==nullptr?r->right->parent = r->parent:r->left->parent = r->parent;
         }else{
-            r->parent->right = r->left==nullptr?r->right:r->left;
+            if(r->left){
+                r->left->parent = nullptr;
+                root = r->left;
+            }else{
+                r->right->parent = nullptr;
+                root = r->right;
+            }
         }
-
-        //rewire parent pointer
-        r->left==nullptr?r->right->parent = r->parent:r->left->parent = r->parent;
-
         //finally delete r
         delete(r);
+        return;
     }
 
     //case 3. most difficult case: the node is neither leaf nor has only one child
@@ -282,8 +300,6 @@ void binaryTree<T>::inorderTraversalHelper(node<T> * root){
     inorderTraversalHelper(root->right);
 }
 
-
-
 int main(){
     binaryTree<int> tree;
     cout<<" enter the elements in the tree"<<endl;
@@ -303,16 +319,19 @@ int main(){
 
     do {
         cout << "enter an option:" << endl;
-        cout << "1. insert node" << end;
-        cout << "2. delete node" << end;
-        cout << "3. inorder traversal " << end;
-        cout << "4. pre-order traversal " << end;
-        cout << "5. post-order traversal " << end;
+        cout << "1. insert node" << endl;
+        cout << "2. delete node" << endl;
+        cout << "3. inorder traversal " << endl;
+        cout << "4. pre-order traversal " << endl;
+        cout << "5. post-order traversal " << endl;
         cout << "6. order statistics(Eg. 24th smallest element?)" << endl;
         cout << "7. rank of a node" << endl;
         cout << "8. predecessor of a node" << endl;
         cout << "9. successor of a node" << endl;
         cout << "10. quit application" << endl;
+
+        cin.clear();
+        cin.ignore();
 
         cin>>option;
 
@@ -329,12 +348,18 @@ int main(){
                 cin>>node_to_delete;
                 tree.deleteNode(node_to_delete);
                 break;
+            case 3:
+                cout<<"inorder traversal...."<<endl;
+                tree.inorderTraversal();
+                break;
+            case 10:
+                cout<<"exiting application"<<endl;
+                exit(0);
+                break;
             default:
                 cout<<"invalid option"<<endl;
-
-
         }
 
-    }while( option!=10)
+    }while( option!=10);
 
 }
