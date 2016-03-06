@@ -222,8 +222,10 @@ void binaryTree<T>::deleteNode(T data) {
 
         //root is a special case!
         if(r == root){
+            //the node to delete is root as well as leaf, ie, only one node is present in tree
             delete r;
             root = nullptr;
+            //no need to update subtree size
             return;
         }
 
@@ -232,8 +234,10 @@ void binaryTree<T>::deleteNode(T data) {
             r->parent->left = nullptr;
         }else{
             //r is right child of its parent
-            r->parent->right == nullptr;
+            r->parent->right = nullptr;
         }
+        updateSubtreeSize(r->parent, false);//false = decrease subtree size
+
         delete(r);
         return;
     }
@@ -262,6 +266,7 @@ void binaryTree<T>::deleteNode(T data) {
                 root = r->right;
             }
         }
+        updateSubtreeSize(r->parent,false);
         //finally delete r
         delete(r);
         return;
@@ -273,6 +278,7 @@ void binaryTree<T>::deleteNode(T data) {
     //a leaf node. Delete the node - simple!
 
     node<T>* pred = predecessorHelper(data);
+    cout<<"predecessor="<<pred->data;
 
     //exchange pred->data and data
     T temp = pred->data;
@@ -280,9 +286,14 @@ void binaryTree<T>::deleteNode(T data) {
     r->data = temp;
 
     //now delete pred , which should be a leaf
-
-    pred->parent->right = nullptr;//pred should be the right child of its parent
+    if(pred->parent->right == pred){
+        pred->parent->right = nullptr;
+    }else{
+        pred->parent->left = nullptr;
+    }
+    updateSubtreeSize(pred->parent, false);
     delete(pred);
+    return;
 }
 
 template <typename T>
