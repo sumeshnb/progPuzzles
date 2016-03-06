@@ -37,22 +37,59 @@ public:
     binaryTree();
     void insertNode(T data);
     void deleteNode(T data);
-    void updateSubtreeSize(node<T> * n);
     void inorderTraversal();
+    void preorderTraversal();
+    void postorderTraversal();
+    void orderStatistics(unsigned int order);
     T predecessor(T data);
     T successor(T data);
 
 private:
     node<T> * root;
-    void inorderTraversalHelper(node<T> *root);
+    void updateSubtreeSize(node<T>* n, bool increase=true);
+    void inorderTraversalHelper(node<T>* root);
+    void postorderTraversalHelper(node<T>* root);
+    void preorderTraversalHelper(node<T>* root);
     node<T>* predecessorHelper(T data);
     node<T> * successorHelper(node<T> * n);
     node<T>* getNodePtr(T data);
+    node<T>* orderStatisticsHelper(node<T>*, unsigned int order);
 };
 
 template <typename T>
 binaryTree<T>::binaryTree():root(nullptr) {
 }
+
+template<typename T>
+void binaryTree<T>::orderStatistics(unsigned int order){
+    node<T>* ptr = orderStatisticsHelper(root, order);
+    if(ptr){
+        cout<<order<<"th smallest item: "<<ptr->data;
+    }else{
+        cout<<"item could not be retrieved as size of tree is less than "<<order<<endl;
+    }
+}
+
+template<typename T>
+node<T>* binaryTree<T>::orderStatisticsHelper(node<T>* root, unsigned int order){
+
+    if(root == nullptr){
+        return nullptr;
+    }
+
+    if(root->left->subtree_size + 1 == order){
+        //yes, root is the one which we are searching
+        return root;
+    }else if(root->left->subtree_size+1 > order){
+        //root is of higher order so we have to search in left subtree
+        return orderStatisticsHelper(root->left, order);
+    }else{
+        //root is of lower order so search in right subtree
+        return orderStatisticsHelper(root->right, order - (root->left->subtree_size + 1));
+    }
+}
+
+
 
 
 //updates subtree size in an upward fashion
@@ -60,15 +97,24 @@ binaryTree<T>::binaryTree():root(nullptr) {
 //this operation does not change the
 //complexity of insertion, ie, O(height)
 template<typename T>
-void binaryTree<T>::updateSubtreeSize(node<T> *n) {
+void binaryTree<T>::updateSubtreeSize(node<T> *n, bool increase) {
     //cout<<"updateSubtreeSize"<<endl;
     node<T> *p = n;
-    //set current nodes size to 1
-    p->subtree_size = 1;
+
+    if(increase){
+        //insert node case
+        //set current nodes size to 1
+        p->subtree_size = 1;
+    }else{
+        //delete node case
+        p->subtree_size--;
+    }
+
     p = p->parent;
+
     while(p){
         //cout<<"updateSubtreeSize loop"<<endl;
-        p->subtree_size++;
+        increase?p->subtree_size++:p->subtree_size--;
         p = p->parent;
     }
 }
@@ -307,9 +353,40 @@ void binaryTree<T>::inorderTraversalHelper(node<T> * root){
         return ;
     }
     inorderTraversalHelper(root->left);
-    cout<<root->data;
+    cout<<root->data<<" ";
     inorderTraversalHelper(root->right);
 }
+
+template <typename T>
+void binaryTree<T>::postorderTraversal() {
+    postorderTraversalHelper(root);
+}
+
+template <typename T>
+void binaryTree<T>::postorderTraversalHelper(node<T> * root){
+    if(root == nullptr){
+        return ;
+    }
+    postorderTraversalHelper(root->left);
+    postorderTraversalHelper(root->right);
+    cout<<root->data<<" ";
+}
+
+template <typename T>
+void binaryTree<T>::preorderTraversal() {
+    preorderTraversalHelper(root);
+}
+
+template <typename T>
+void binaryTree<T>::preorderTraversalHelper(node<T> * root){
+    if(root == nullptr){
+        return ;
+    }
+    cout<<root->data<<" ";
+    preorderTraversalHelper(root->left);
+    preorderTraversalHelper(root->right);
+}
+
 
 int main(){
     binaryTree<int> tree;
@@ -363,6 +440,17 @@ int main(){
                 cout<<"inorder traversal...."<<endl;
                 tree.inorderTraversal();
                 break;
+            case 4:
+                cout<<"pre-order traversal..."<<endl;
+                tree.preorderTraversal();
+            case 5:
+                cout<<"post-order traversal.."<<endl;
+                tree.postorderTraversal();
+            case 6:
+                cout<<"enter the order statistics to find out"<<endl;
+                unsigned int order_statistics;
+                cin>>order_statistics;
+                tree.orderStatistics(order_statistics);
             case 10:
                 cout<<"exiting application"<<endl;
                 exit(0);
