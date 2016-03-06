@@ -77,16 +77,48 @@ node<T>* binaryTree<T>::orderStatisticsHelper(node<T>* root, unsigned int order)
         return nullptr;
     }
 
-    if(root->left->subtree_size + 1 == order){
-        //yes, root is the one which we are searching
-        return root;
-    }else if(root->left->subtree_size+1 > order){
-        //root is of higher order so we have to search in left subtree
-        return orderStatisticsHelper(root->left, order);
+    if(root->left && root->right){
+
+        if(root->left->subtree_size + 1 == order){
+            //yes, root is the one which we are searching
+            return root;
+        }else if(root->left->subtree_size+1 > order){
+            //root is of higher order so we have to search in left subtree
+            return orderStatisticsHelper(root->left, order);
+        }else{
+            //root is of lower order so search in right subtree
+            return orderStatisticsHelper(root->right, order - (root->left->subtree_size + 1));
+        }
+
+    }else if(root->left){
+
+        if(root->left->subtree_size + 1 == order){
+            //yes, root is the one which we are searching
+            return root;
+        }else if(root->left->subtree_size+1 > order){
+            //root is of higher order so we have to search in left subtree
+            return orderStatisticsHelper(root->left, order);
+        }else{
+            //no right child for root
+            return nullptr;
+        }
+
+    }else if(root->right){
+        if(1 == order){
+            //yes, root is the one which we are searching
+            return root;
+        }else{
+            //root is of lower order so search in right subtree
+            return orderStatisticsHelper(root->right, order - 1);
+        }
     }else{
-        //root is of lower order so search in right subtree
-        return orderStatisticsHelper(root->right, order - (root->left->subtree_size + 1));
+        if(1 == order){
+            return root;
+        }else{
+            return nullptr;
+        }
     }
+
 }
 
 
@@ -443,14 +475,17 @@ int main(){
             case 4:
                 cout<<"pre-order traversal..."<<endl;
                 tree.preorderTraversal();
+                break;
             case 5:
                 cout<<"post-order traversal.."<<endl;
                 tree.postorderTraversal();
+                break;
             case 6:
                 cout<<"enter the order statistics to find out"<<endl;
                 unsigned int order_statistics;
                 cin>>order_statistics;
                 tree.orderStatistics(order_statistics);
+                break;
             case 10:
                 cout<<"exiting application"<<endl;
                 exit(0);
