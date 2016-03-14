@@ -20,6 +20,7 @@
  */
 #include <memory>
 #include <iostream>
+#include <climits>
 using namespace std;
 
 template <typename T>
@@ -40,9 +41,10 @@ public:
     void inorderTraversal();
     void preorderTraversal();
     void postorderTraversal();
-    void orderStatistics(unsigned int order);
+    T orderStatistics(unsigned int order);
     T predecessor(T data);
     T successor(T data);
+    unsigned int rank(T data);
 
 private:
     node<T> * root;
@@ -54,6 +56,7 @@ private:
     node<T> * successorHelper(T n);
     node<T>* getNodePtr(T data);
     node<T>* orderStatisticsHelper(node<T>*, unsigned int order);
+    unsigned int rankHelper(node<T>* root, T node, unsigned int current_rank);
 };
 
 template <typename T>
@@ -61,12 +64,54 @@ binaryTree<T>::binaryTree():root(nullptr) {
 }
 
 template<typename T>
-void binaryTree<T>::orderStatistics(unsigned int order){
+unsigned int binaryTree<T>::rank(T nodeval){
+    node<T>* ptr = getNodePtr(nodeval);
+    if(!ptr){
+        cout<<"Node does not exist in tree!!"<<endl;
+        return UINT_MAX;
+    }
+
+   return rankHelper(root,nodeval,0);
+}
+
+template<typename T>
+unsigned int binaryTree<T>::rankHelper(node<T>* root, T nodeval,unsigned int current_rank){
+
+    if(root->data == nodeval){
+        if(root->left){
+        current_rank += root->left->subtree_size + 1;
+        }
+        else{
+            current_rank += 1;
+        }
+        return current_rank;
+    }
+    else if(root->data > nodeval){
+        current_rank += rankHelper(root->left,nodeval,current_rank);
+        return current_rank;
+    }
+    else{
+        if(root->left){
+            current_rank += root->left->subtree_size+1+rankHelper(root->right,nodeval,current_rank);
+            return current_rank;
+        }
+        else{
+            current_rank += 1+rankHelper(root->right,nodeval,current_rank);
+            return current_rank;
+        }
+    }
+
+}
+
+template<typename T>
+T binaryTree<T>::orderStatistics(unsigned int order){
     node<T>* ptr = orderStatisticsHelper(root, order);
     if(ptr){
-        cout<<order<<"th smallest item: "<<ptr->data;
+        return ptr->data;
     }else{
         cout<<"item could not be retrieved as size of tree is less than "<<order<<endl;
+        //return max value to indicate item absent in tree
+        return UINT_MAX;
     }
 }
 
@@ -520,9 +565,13 @@ int main(){
                 cout<<"enter the order statistics to find out"<<endl;
                 unsigned int order_statistics;
                 cin>>order_statistics;
-                tree.orderStatistics(order_statistics);
+                cout<<order_statistics<<"th smallest node is: "<<tree.orderStatistics(order_statistics)<<endl;
                 break;
             case 7:
+                cout<<"enter the node for which rank to be found out"<<endl;
+                unsigned int node_rank;
+                cin>>node_rank;
+                cout<<"Rank of node "<<node_rank<<" is: "<<tree.rank(node_rank)<<endl;
                 break;
             case 8:
                 cout<<"Enter node"<<endl;
