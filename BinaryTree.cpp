@@ -51,7 +51,7 @@ private:
     void postorderTraversalHelper(node<T>* root);
     void preorderTraversalHelper(node<T>* root);
     node<T>* predecessorHelper(T data);
-    node<T> * successorHelper(node<T> * n);
+    node<T> * successorHelper(T n);
     node<T>* getNodePtr(T data);
     node<T>* orderStatisticsHelper(node<T>*, unsigned int order);
 };
@@ -163,7 +163,6 @@ void binaryTree<T>::insertNode(T a) {
 
     //Tree is empty
     if(!r){
-        //cout<<"root case"<<endl;
         node<T> *n = new node<T>();
         n->subtree_size = 1;
         n->data = a;
@@ -174,9 +173,7 @@ void binaryTree<T>::insertNode(T a) {
 
     while(r){
         if(a < r->data){
-            //cout<<"less"<<endl;
             if(r->left == nullptr){
-                //cout<<"less and nullptr"<<endl;
                 //place node here and break loop
                 node<T>  *n = new node<T>();
                 n->data = a;
@@ -190,9 +187,7 @@ void binaryTree<T>::insertNode(T a) {
             r= r->left;
         }
         else{
-            //cout<<"right"<<endl;
             if(r->right == nullptr){
-                //cout<<"right and nullptr"<<endl;
                 //place node here and break loop
                 node<T>  *n = new node<T>();
                 n->data = a;
@@ -213,7 +208,7 @@ void binaryTree<T>::insertNode(T a) {
 template<typename T>
 T binaryTree<T>::predecessor(T data){
 
-     node<T>* p = predessorHelper(data);
+     node<T>* p = predecessorHelper(data);
      if(p){
          return p->data;
      }else{
@@ -239,7 +234,7 @@ node<T>* binaryTree<T>::predecessorHelper(T data){
 
     //case-2: node does not have left subtree
     // traverse up the tree untill a node 
-    // with higher value is found
+    // with lower value is found
 
     node<T>* t = r;
     while(t){
@@ -250,9 +245,54 @@ node<T>* binaryTree<T>::predecessorHelper(T data){
         t = t->parent;
     }
 
-    //only one node is present in the tree and which does not have predecessor
+    //the node does not have predecessor, so it is the smallest in tree
     return nullptr;
 }
+
+template<typename T>
+T binaryTree<T>::successor(T data){
+
+     node<T>* p = successorHelper(data);
+     if(p){
+         return p->data;
+     }else{
+         //return the same data to indicate 
+         //no predecessor present
+         return data;
+     }
+}
+
+template<typename T>
+node<T>* binaryTree<T>::successorHelper(T data){
+    node<T> * r = getNodePtr(data);
+
+    //case-1: node has right subtree
+    if(r->right){
+        //return the node which has smallest value in right subtree
+        node<T> *k = r->right;
+        while(k->left){
+            k = k->left;
+        }
+        return k;
+    }
+
+    //case-2: node does not have right subtree
+    // traverse up the tree untill a node 
+    // with higher value is found
+
+    node<T>* t = r;
+    while(t){
+        if(t->data > r->data){//assume no duplicate keys are present in the tree
+            //we found a parent with lower data
+            return t;
+        }
+        t = t->parent;
+    }
+
+    //the node does not have a successor, the largest value in tree 
+    return nullptr;
+}
+
 
 template <typename T>
 node<T>* binaryTree<T>::getNodePtr(T data){
@@ -261,7 +301,6 @@ node<T>* binaryTree<T>::getNodePtr(T data){
     node<T> * r = root;
 
     while(r){
-        cout<<__FUNCTION__<<":r->data="<<r->data<<"  data="<<data<<endl;
         if(r->data == data){
             break;
         }
@@ -296,8 +335,6 @@ void binaryTree<T>::deleteNode(T data) {
 
     if(r->left== nullptr && r->right == nullptr){
 
-        cout<<"\n DEBUG:leaf node case entered...\n";
-
         //root is a special case!
         if(r == root){
             //the node to delete is root as well as leaf, ie, only one node is present in tree
@@ -325,7 +362,6 @@ void binaryTree<T>::deleteNode(T data) {
     // the node and re-wire the pointers
 
     if(r->left == nullptr || r->right == nullptr){
-        cout<<"\n DEBUG:one child case entered...\n";
         if(r != root){
             if(r->parent->left == r){//r is the left child of its parent
                 r->parent->left = r->left==nullptr?r->right:r->left;
@@ -356,7 +392,7 @@ void binaryTree<T>::deleteNode(T data) {
     //a leaf node. Delete the node - simple!
 
     node<T>* pred = predecessorHelper(data);
-    cout<<"predecessor="<<pred->data;
+    //cout<<"predecessor="<<pred->data;
 
     //exchange pred->data and data
     T temp = pred->data;
@@ -485,6 +521,20 @@ int main(){
                 unsigned int order_statistics;
                 cin>>order_statistics;
                 tree.orderStatistics(order_statistics);
+                break;
+            case 7:
+                break;
+            case 8:
+                cout<<"Enter node"<<endl;
+                int pred;
+                cin>>pred;
+                cout<<"Predecessor of "<<pred<<"is "<<tree.predecessor(pred)<<endl;
+                break;
+            case 9:
+                cout<<"Enter node"<<endl;
+                int succ;
+                cin>>succ;
+                cout<<"Successor of "<<succ<<"is "<<tree.successor(succ)<<endl;
                 break;
             case 10:
                 cout<<"exiting application"<<endl;
