@@ -45,6 +45,7 @@ public:
     T predecessor(T data);
     T successor(T data);
     unsigned int rank(T data);
+    bool isBalanced();
 
 private:
     node<T> * root;
@@ -72,6 +73,67 @@ unsigned int binaryTree<T>::rank(T nodeval){
     }
 
    return rankHelper(root,nodeval,0);
+}
+
+template<typename T>
+bool binaryTree::isBalanced(){
+
+    pair<int,bool> p = isBalancedHelper(root);
+    return p.second;
+}
+
+template<typename T>
+pair<int,bool> binaryTree::isBalancedHelper(node<T>* root){
+
+    //check if this node is leaf, all leaves are balanced
+    if(root->left == nullptr && root->right == nullptr){
+        return pair<int,bool>(1,true);//height = 1, balanced = true
+    }
+    else{
+        if(root->left && root->right){//the node has both children
+            pair<int,bool> p1 = isBalancedHelper(root->left);
+            pair<int,bool> p2 = isBalancedHelper(root->right);
+
+            if(p1.second && p2.second && abs(p1.first - p2.first) <=1) {
+                //height of both subtrees differ at most by one
+                //both subtrees themselves are balanced
+                //make a new pair and set as height the max of its childrens
+                //height and set balanced as true
+                return pair<int,bool>(p1.first>p2.first?p1.first+1:p2.first+1,true);
+            }
+            else{
+                //it is clear that the tree is not a balanced tree
+                return pair<int,bool>(p1.first>p2.first?p1.first+1:p2.first+1,false);
+            }
+
+        }
+        else
+        {
+            if(root->left){
+                pair<int,bool> p1 = isBalancedHelper(root->left);
+                if(p1.first == 1){
+                    //this node is balanced as the left child is a leaf
+                    return pair<int,bool>(p1.first+1,true);
+                }
+                else{
+                    //not a balanced tree
+                    return pair<int,bool>(p1.first+1,false);
+                }
+            }
+            else(root->right){
+                pair<int,bool> p1 = isBalancedHelper(root->right);
+                if(p1.first == 1){
+                    //this node is balanced as the left child is a leaf
+                    return pair<int,bool>(p1.first+1,true);
+                }
+                else{
+                    //not a balanced tree
+                    return pair<int,bool>(p1.first+1,false);
+                }
+            }
+            //no need to check if both left & right both are null, as that is the base case of the recursion
+        }
+    }
 }
 
 template<typename T>
