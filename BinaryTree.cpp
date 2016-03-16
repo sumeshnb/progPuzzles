@@ -16,11 +16,13 @@
  *  8. rank of an item
  *  9. predecessor
  *  10.successor
- *  11. quit application
+ *  11. isBalanced?
+ *  12. quit application
  */
 #include <memory>
 #include <iostream>
 #include <climits>
+#include <cmath>
 using namespace std;
 
 template <typename T>
@@ -58,6 +60,7 @@ private:
     node<T>* getNodePtr(T data);
     node<T>* orderStatisticsHelper(node<T>*, unsigned int order);
     unsigned int rankHelper(node<T>* root, T node, unsigned int current_rank);
+    pair<int,bool> isBalancedHelper(node<T>* root);
 };
 
 template <typename T>
@@ -76,14 +79,18 @@ unsigned int binaryTree<T>::rank(T nodeval){
 }
 
 template<typename T>
-bool binaryTree::isBalanced(){
-
+bool binaryTree<T>::isBalanced(){
+    if(!root){
+        //empty tree
+        return true;
+    }
     pair<int,bool> p = isBalancedHelper(root);
+    //we have height of the tree available, but its not used
     return p.second;
 }
 
 template<typename T>
-pair<int,bool> binaryTree::isBalancedHelper(node<T>* root){
+pair<int,bool> binaryTree<T>::isBalancedHelper(node<T>* root){
 
     //check if this node is leaf, all leaves are balanced
     if(root->left == nullptr && root->right == nullptr){
@@ -95,17 +102,16 @@ pair<int,bool> binaryTree::isBalancedHelper(node<T>* root){
             pair<int,bool> p2 = isBalancedHelper(root->right);
 
             if(p1.second && p2.second && abs(p1.first - p2.first) <=1) {
-                //height of both subtrees differ at most by one
+                //height of both subtrees differ by at most by one
                 //both subtrees themselves are balanced
                 //make a new pair and set as height the max of its childrens
                 //height and set balanced as true
-                return pair<int,bool>(p1.first>p2.first?p1.first+1:p2.first+1,true);
+                return pair<int,bool>(max<int>(p1.first,p2.first)+1, true);
             }
             else{
-                //it is clear that the tree is not a balanced tree
-                return pair<int,bool>(p1.first>p2.first?p1.first+1:p2.first+1,false);
+                //the tree is not a balanced tree
+                return pair<int,bool>(max<int>(p1.first,p2.first)+1, false);
             }
-
         }
         else
         {
@@ -120,7 +126,7 @@ pair<int,bool> binaryTree::isBalancedHelper(node<T>* root){
                     return pair<int,bool>(p1.first+1,false);
                 }
             }
-            else(root->right){
+            else{
                 pair<int,bool> p1 = isBalancedHelper(root->right);
                 if(p1.first == 1){
                     //this node is balanced as the left child is a leaf
@@ -131,7 +137,6 @@ pair<int,bool> binaryTree::isBalancedHelper(node<T>* root){
                     return pair<int,bool>(p1.first+1,false);
                 }
             }
-            //no need to check if both left & right both are null, as that is the base case of the recursion
         }
     }
 }
@@ -591,7 +596,8 @@ int main(){
         cout << "7. rank of a node" << endl;
         cout << "8. predecessor of a node" << endl;
         cout << "9. successor of a node" << endl;
-        cout << "10. quit application" << endl;
+        cout << "10. is tree balanced?" << endl;
+        cout << "11. quit application" << endl;
 
         cin.clear();
         cin.ignore();
@@ -599,18 +605,20 @@ int main(){
         cin>>option;
 
         switch(option){
-            case 1:
+            case 1:{
                 cout<<"enter node value:";
                 int node_value;
                 cin>>node_value;
                 tree.insertNode(node_value);
                 break;
-            case 2:
+            }
+            case 2:{
                 cout<<"enter node value:"<<endl;
                 int node_to_delete;
                 cin>>node_to_delete;
                 tree.deleteNode(node_to_delete);
                 break;
+            }
             case 3:
                 cout<<"inorder traversal...."<<endl;
                 tree.inorderTraversal();
@@ -623,31 +631,43 @@ int main(){
                 cout<<"post-order traversal.."<<endl;
                 tree.postorderTraversal();
                 break;
-            case 6:
+            case 6:{
                 cout<<"enter the order statistics to find out"<<endl;
                 unsigned int order_statistics;
                 cin>>order_statistics;
                 cout<<order_statistics<<"th smallest node is: "<<tree.orderStatistics(order_statistics)<<endl;
                 break;
-            case 7:
+            }
+            case 7:{
                 cout<<"enter the node for which rank to be found out"<<endl;
                 unsigned int node_rank;
                 cin>>node_rank;
                 cout<<"Rank of node "<<node_rank<<" is: "<<tree.rank(node_rank)<<endl;
                 break;
-            case 8:
+            }
+            case 8:{
                 cout<<"Enter node"<<endl;
                 int pred;
                 cin>>pred;
                 cout<<"Predecessor of "<<pred<<"is "<<tree.predecessor(pred)<<endl;
                 break;
-            case 9:
+            }
+            case 9:{
                 cout<<"Enter node"<<endl;
                 int succ;
                 cin>>succ;
                 cout<<"Successor of "<<succ<<"is "<<tree.successor(succ)<<endl;
                 break;
-            case 10:
+            }
+            case 10:{
+                bool b = tree.isBalanced();
+                if(b)
+                    cout<<"Tree is balanced: TRUE"<<endl;
+                else
+                    cout<<"Tree is balanced: FALSE"<<endl;
+                break;
+            }
+            case 11:
                 cout<<"exiting application"<<endl;
                 exit(0);
                 break;
