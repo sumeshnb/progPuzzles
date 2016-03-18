@@ -89,6 +89,12 @@ bool binaryTree<T>::isBalanced(){
     return p.second;
 }
 
+/*
+This function returns a pair indicating the size
+and a bool value indicating whether the subtrees
+rooted at root is balanced.
+pair<height, isBalanced>
+*/
 template<typename T>
 pair<int,bool> binaryTree<T>::isBalancedHelper(node<T>* root){
 
@@ -324,7 +330,7 @@ T binaryTree<T>::predecessor(T data){
      if(p){
          return p->data;
      }else{
-         //return the same data to indicate 
+         //return the same data to indicate
          //no predecessor present
          return data;
      }
@@ -345,7 +351,7 @@ node<T>* binaryTree<T>::predecessorHelper(T data){
     }
 
     //case-2: node does not have left subtree
-    // traverse up the tree untill a node 
+    // traverse up the tree untill a node
     // with lower value is found
 
     node<T>* t = r;
@@ -368,7 +374,7 @@ T binaryTree<T>::successor(T data){
      if(p){
          return p->data;
      }else{
-         //return the same data to indicate 
+         //return the same data to indicate
          //no predecessor present
          return data;
      }
@@ -389,7 +395,7 @@ node<T>* binaryTree<T>::successorHelper(T data){
     }
 
     //case-2: node does not have right subtree
-    // traverse up the tree untill a node 
+    // traverse up the tree untill a node
     // with higher value is found
 
     node<T>* t = r;
@@ -401,7 +407,7 @@ node<T>* binaryTree<T>::successorHelper(T data){
         t = t->parent;
     }
 
-    //the node does not have a successor, the largest value in tree 
+    //the node does not have a successor, the largest value in tree
     return nullptr;
 }
 
@@ -441,7 +447,7 @@ void binaryTree<T>::deleteNode(T data) {
     if(r == nullptr){
         return;
     }
-   
+
     //1. Happy case - the node to delete is a leaf
     //r is the node which have data as value
 
@@ -567,7 +573,8 @@ void binaryTree<T>::preorderTraversalHelper(node<T> * root){
     preorderTraversalHelper(root->right);
 }
 
-
+//driver code to test the binary tree
+//implementation
 int main(){
     binaryTree<int> tree;
     cout<<" enter the elements in the tree"<<endl;
@@ -675,6 +682,6 @@ int main(){
                 cout<<"invalid option"<<endl;
         }
 
-    }while( option!=10);
+    }while( option!=11);
 
 }
