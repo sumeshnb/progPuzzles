@@ -49,13 +49,40 @@ vector<int> union_find(vector<vector<int>> &v){
     if(size < 1)
 	return vector<int>{};
 
-    decltype(v[0].begin()) arr[] = new arr;
+    using it_type = decltype(v[0].begin());
+    vector<pair<it_type,it_type>> it_v; 
 
     //array of iterators
     for(auto &a: v){
-	arr[i] = a.begin();
+	it_v.push_back(a.begin(),a.end());
     }
-    
+
+    bool loop_flag = true;
+
+    //result vector
+    vector<int> target;
+
+    while(loop_flag){
+
+	int min = INT_MAX;
+
+	for(auto &p: it_v){
+	    if(p.first != p.second){//process only if this vector is not finished
+		if(*p.first == min){
+		    ++p.first;//skip the item, its a duplicate
+		}
+		else if(*p < min){
+		    min = *p;
+		    ++p;
+		}
+		else{
+		    ;//do nothing
+		}
+
+	    }
+	}
+
+    }
 
 }
 
