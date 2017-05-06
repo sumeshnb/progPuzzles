@@ -1,0 +1,4 @@
+software;development of,posix
+threading
+library for hp:non-stop kernel os
+
